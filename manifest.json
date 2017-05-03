@@ -5,6 +5,7 @@
     "version": "1.0",
     "browser_action": {
         "default_icon": "icon.png",
+        "default_popup": "popup.html",
         "default_title": "Samples & Savings"
     },
     "content_scripts": [
@@ -14,15 +15,21 @@
             ],
             "js": [
                 "jquery-3.0.0.js",
-                "text.js",
+                "handler.js",
                 "rewards.json"
             ],
             "run_at": "document_idle"
         }
     ],
     "permissions": [
+        "notifications",
+        "tabs",
         "activeTab",
         "webNavigation",
         "*://*/*"
+    ],
+    "background": { "scripts": ["background.js"] },
+    "web_accessible_resources": [
+        "icon.png"
     ]
 }
