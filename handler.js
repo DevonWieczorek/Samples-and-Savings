@@ -110,7 +110,7 @@ function getReward(reward) {
 }
 
 function localStorageSupported(){
-    (typeof(Storage) !== "undefined") ? return true : return false;
+    //(typeof(Storage) !== "undefined") ? return true : return false;
 }
 
 function setStorageObject(key, obj){

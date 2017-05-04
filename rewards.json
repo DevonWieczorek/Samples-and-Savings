@@ -1,4 +1,4 @@
-{
+var rewards = [{
 'Axe': 'axe',
 'Baby': 'baby',
 'Baby Freebies': 'babyfreebies',
@@ -118,4 +118,4 @@
 'Yankee Candle': 'yankeegeneric',
 'Yankee Candle Generic': 'yankeegeneric',
 'Ziplock': 'ziplock'
-}
+}]
