@@ -42,6 +42,7 @@ function cleanQuery(q){
     q = q.replace(/\./gi, ''); // Remove periods
     q = q.replace(/\"/gi, ''); // Remove quotations
     q = q.replace(/\'/gi, ''); // Remove apostrophes
+    q = q.replace(/\-/gi, ' '); // Replace + with a space
     q = q.replace(/\+/gi, ' '); // Replace + with a space
     return q;
 }
