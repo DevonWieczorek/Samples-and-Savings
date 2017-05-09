@@ -109,8 +109,7 @@ chrome.notifications.onButtonClicked.addListener(function(notificationId, btnIdx
     chrome.notifications.clear(notificationId, function(){}); // Remove notification
 }); 
 
-// Test for click on extension icon, doesn't work
 chrome.browserAction.onClicked.addListener(function(activeTab){
-    alert('browserAction');
+    // Test for click on extension icon, doesn't work
 }); 
 

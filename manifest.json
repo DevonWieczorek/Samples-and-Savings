@@ -4,9 +4,9 @@
     "description": "Welcome to Samples & Savings, where you’ll find a collection of the best deals on some of your favorite products and services. Sign up to get matched with daily deals based on your personal preferences, or browse the website for the latest samples, sweepstakes and coupons!",
     "version": "1.0",
     "browser_action": {
-        "default_icon": "icon.png",
-        "default_popup": "popup.html",
-        "default_title": "Samples & Savings"
+        "default_icon": "icon.png"
+        //,"default_popup": "popup.html"
+        ,"default_title": "Samples & Savings"
     },
     "content_scripts": [
         {
