@@ -1,22 +1,4 @@
-
-function setStorageObject(key, obj){
-    if (typeof(Storage) !== "undefined"){
-       localStorage.setItem(key, obj);
-    }
-    else{
-        console.log('Local storage is not supported in this browser.');
-    }
-}
-
-function getStorageObject(key){
-    if (typeof(Storage) !== "undefined"){
-       localStorage.getItem(key);
-    }
-    else{
-        console.log('Local storage is not supported in this browser.');
-    }
-}
-
+// retrieve rewards list from rewards.json
 var rewards;
 function getRewardList(){
     var xhr = new XMLHttpRequest();
@@ -28,6 +10,8 @@ function getRewardList(){
                 return false;
             }
             rewards = jQuery.parseJSON(xhr.responseText);
+            
+            //if rewards are safely retrieved, call the match function
             matchReward(window.location.href);
         }
     }
@@ -58,10 +42,12 @@ function matchReward(q){
         if(q.includes(k)) arr.push(k);
     }
     
+    // if more than one result, refine search
     if(arr.length > 1){
         q = refinedSearch(q,arr);
         getReward(rewards[q]);
     }
+    // else return the match
     else if(arr.length == 1){
         getReward(rewards[arr]);
     }
@@ -76,17 +62,19 @@ function refinedSearch(q, arr){
     
     for(var i = 0; i < arr.length; i++){
         if(q.includes(arr[i])){
-            alert(arr[i]);
             r.push(arr[i]);
         } 
     }
     
+    // if no suitable match, return the newest value from the query
     if(r.length == 0){
         return arr[0];
     }
+    // if one match, return it
     else if(r.length == 1){
         return r[0];
     }
+    // else use relevancy algorith to determine the best match
     else{
         var m = relevancy.sort(r,q);
         return m[0];
@@ -125,13 +113,16 @@ function getReward(reward) {
             var rewardInfo = [maintext,finalImg];
         
             rewardText = rewardInfo[0];
+        
             if(rewardInfo[1].indexOf('.com') > -1){
                 img = rewardInfo[1];
             }
             else{
                 img = 'http://www.cdn925.com' + rewardInfo[1].split('..')[1];
             }
+        
             message = 'Looking for FREE ' + cleanRewardText(rewardText) + '?\nClick here to claim!';
+        
             url = 'http://signup.samplesandsavings.com/default.aspx?Flow=C9A3F9FE-57A9-D490-BE51-26C2DFC9DC07E007EFC7&reward=' + reward;
 
             chrome.extension.sendMessage({
@@ -149,8 +140,10 @@ function getReward(reward) {
 
 chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
     var exceptions = ['samplesandsavings', 'flowpreview', 'cdn925','freesamplefinderusa', 'promoandsweeps'];
+    
     if (msg.action == 'search') {
         for(var i = 0; i < exceptions.length; i++){
+            // don't trigger alerts on our existing samples or preview pages
             if(window.location.host.indexOf(exceptions[i]) > -1) return false;
         }
         getRewardList();
