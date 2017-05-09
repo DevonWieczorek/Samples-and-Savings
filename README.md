@@ -11,3 +11,7 @@ USAGE: Simply install the extension from the Chrome Store and continue your brow
 
 CREDITS:
 - Relevancy.js: https://github.com/padolsey/relevancy.js/
+
+TODO:
+- Figure out how to clean reward keys programatically when they are retrieved
+- Implement local storage for reward key/values to decrease file requests
