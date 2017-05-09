@@ -16,7 +16,7 @@
             "js": [
                 "jquery-3.0.0.js",
                 "handler.js",
-                "rewards.json"
+                "relevancy.js"
             ],
             "run_at": "document_idle"
         }
@@ -26,10 +26,12 @@
         "tabs",
         "activeTab",
         "webNavigation",
+        "storage",
         "*://*/*"
     ],
     "background": { "scripts": ["background.js"] },
     "web_accessible_resources": [
-        "icon.png"
+        "icon.png",
+        "rewards.json"
     ]
 }

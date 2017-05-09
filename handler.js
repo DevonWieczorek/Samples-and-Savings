@@ -1,123 +1,180 @@
-walk(document.body);
 
-function walk(node)  
-{
-	// I stole this function from here:
-	// http://is.gd/mwZp7E
-	
-	var child, next;
-
-	switch ( node.nodeType )  
-	{
-		case 1: 
-		case 9:  
-		case 11: 
-			child = node.firstChild;
-			while ( child ) 
-			{
-				next = child.nextSibling; 
-				walk(child);
-				child = next;
-			}
-			break;
-
-		case 3: 
-            if(window.location.href.indexOf("google") > -1) {
-                //set timeout for google
-                setTimeout(function(){ handleText(node);}, 1000);
-            }
-            else{
-                //otherwise execute right away
-                handleText(node);
-            }
-			break;
-	}
+function setStorageObject(key, obj){
+    if (typeof(Storage) !== "undefined"){
+       localStorage.setItem(key, obj);
+    }
+    else{
+        console.log('Local storage is not supported in this browser.');
+    }
 }
 
-function handleText(textNode) 
-{
-	var v = textNode.nodeValue;
+function getStorageObject(key){
+    if (typeof(Storage) !== "undefined"){
+       localStorage.getItem(key);
+    }
+    else{
+        console.log('Local storage is not supported in this browser.');
+    }
+}
 
-	v = v.replace(/Donald Trump/gi, "Donald Duck");
-	v = v.replace(/Donald J Trump/gi, "Donald F Duck");
-	v = v.replace(/Donald J. Trump/gi, "Donald F. Duck");
-	v = v.replace(/Donald John Trump/gi, "Donald Fauntleroy Duck");
-	v = v.replace(/Mr. Trump/gi, "Mr. Duck");
-	v = v.replace(/Mister Trump/gi, "Mister Duck");
-    v = v.replace(/Drumpf/gi, "Duck");
-    v = v.replace(/Trump/gi, "Duck");
-    v = v.replace(/Trump2016/gi, "Duck2016");
-    v = v.replace(/#Trump2016/gi, "#Duck2016");
-    v = v.replace(/Make America Great Again/gi, "Make America Quack Again");
-    v = v.replace(/#Make America Great Again/gi, "#Make America Quack Again");
-    v = v.replace(/#MakeAmericaGreatAgain/gi, "#MakeAmericaQuackAgain");
-    v = v.replace(/realDonaldTrump/gi, "realDonaldDuck");
-
-	textNode.nodeValue = v;
+var rewards;
+function getRewardList(){
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", chrome.runtime.getURL('rewards.json'), true);
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4) {
+            if(!xhr.responseText){
+                console.log('There was an error retrieving the data.');
+                return false;
+            }
+            rewards = jQuery.parseJSON(xhr.responseText);
+            matchReward(window.location.href);
+        }
+    }
+    xhr.send();
     
+    return rewards;
 }
 
-// ORIGINAL CODE FROM DUCKIFY ABOVE THIS LINE #########################################
-
-function getParamOnName(name, url) {
-    if (!url) url = window.location.href;
-    name = name.replace(/[\[\]]/g, "\\$&");
-    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, " "));
-}
-//getParamOnName('parameterName');
 
 function cleanQuery(q){
-    q = unescape(q); // Clean special characters (including spaces %20)
+    q = unescape(q).toLowerCase(); // Clean special characters (including spaces %20)
     q = q.replace(/\./gi, ''); // Remove periods
+    q = q.replace(/\"/gi, ''); // Remove quotations
     q = q.replace(/\'/gi, ''); // Remove apostrophes
     q = q.replace(/\+/gi, ' '); // Replace + with a space
     return q;
 }
 
-function matchReward(k){
-    for (var k in target){ 
-       if (target.hasOwnProperty(k)) {
-            console.log("Key is " + k + ", value is" + target[k]);
-           
-            getReward(target[k]);
-       }
+function matchReward(q){
+    // key is the search term (q)
+    // rewards is the JSON object
+    var arr = [];
+    q = cleanQuery(q);
+    
+    // already finds exact match
+    for (var key in rewards) {
+        var k = cleanQuery(`${key}`);
+        if(q.includes(k)) arr.push(k);
+        //if(cleanQuery(q).indexOf(k) > -1) arr.push(k);
+    }
+    
+    if(arr.length > 1){
+        q = refinedSearch(q,arr);
+        getReward(rewards[q]);
+    }
+    else if(arr.length == 1){
+        getReward(rewards[arr]);
     }
 }
+
+function compareLength(a,b){
+    return a.length > b.length;
+}
+
+function refinedSearch(q, arr){
+    var r = [];
+    
+    for(var i = 0; i < arr.length; i++){
+        var regex = '/' + arr[i] + '/gi';
+        var tempQ = q.match(regex);
+        if(tempQ != null) r.push(tempQ);
+    }
+    
+    if(r.length == 0 || r.length == 1){
+        return arr[0];
+    }
+    else{
+        var m = r[0];
+        for(var i = 0; i < r.length; i++){
+            if(compareLength(r[i], m)) m = r[i];
+        }
+        return m;
+    }
+    
+}
+
+function refinedSearch(q, arr){
+    var r = [];
+    
+    for(var i = 0; i < arr.length; i++){
+        if(q.includes(arr[i])){
+            r.push(arr[i]);
+        } 
+    }
+    
+    if(r.length == 0){
+        return arr[0];
+    }
+    else if(r.length == 1){
+        return r[0];
+    }
+    else{
+        var m = relevancy.sort(r,q);
+        return m;
+    }
+    
+}
+
+function cleanRewardText(r){
+    if(r.toLowerCase().indexOf('samples') == -1 && r.toLowerCase().indexOf('coupons') == -1){
+        r += ' Samples';
+    }
+    return r;
+}
+
+var img = '';
+var url = '';
+var message = '';
+var rewardText = '';
+var rewardValue = '';
+var response = [];
 
 function getReward(reward) {
     reward = reward.toLowerCase();
     if (reward == "" || reward == undefined) reward = "sasgeneric";
 
-    $.getJSON('http://www.flowpreview.com/Services/GetRewardValue.ashx?c=7&Value=' + reward, function (rewardObj) { 
+    jQuery.getJSON('https://www.flowpreview.com/Services/GetRewardValue.ashx?c=7&Value=' + reward, function (rewardObj) { 
         if (!rewardObj) return false;
 
-        var finalImg = "";
-        var maintext = rewardObj[0].maintext
-            , mainimg = rewardObj[0].mainimg
-            , mainimg2 = rewardObj[0].mainimg2;
+            var finalImg = "";
+            var maintext = rewardObj[0].maintext
+                , mainimg = rewardObj[0].mainimg
+                , mainimg2 = rewardObj[0].mainimg2;
+
+            (mainimg2 == undefined || mainimg2 == "") ? finalImg = mainimg : finalImg = mainimg2;
+
+            var rewardInfo = [maintext,finalImg];
         
-        (mainimg2 == undefined || mainimg2 == "") ? finalImg = mainimg : finalImg = mainimg2;
+            rewardText = rewardInfo[0];
+            if(rewardInfo[1].indexOf('.com') > -1){
+                img = rewardInfo[1];
+            }
+            else{
+                img = 'http://www.cdn925.com' + rewardInfo[1].split('..')[1];
+            }
+            message = 'Looking for FREE ' + cleanRewardText(rewardText) + '?\nClick here to claim!';
+            url = 'http://signup.samplesandsavings.com/default.aspx?Flow=C9A3F9FE-57A9-D490-BE51-26C2DFC9DC07E007EFC7&reward=' + reward;
 
-        var rewardInfo = [maintext,finalImg];
-        console.log(rewardInfo);
+            chrome.extension.sendMessage({
+                message: message, 
+                img: img, 
+                url: url, 
+                rewardText: rewardText,
+                rewardValue: reward
+            }, function(){});
 
-        return rewardInfo;
+            response = [img, message, url, rewardText, rewardValue];
+            return response;
     });
 }
 
-function localStorageSupported(){
-    //(typeof(Storage) !== "undefined") ? return true : return false;
-}
-
-function setStorageObject(key, obj){
-    localStorage.setItem(key, obj);
-}
-
-function getStorageObject(obj){
-    localStorage.getItem(obj);
-}
-
+chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
+    var exceptions = ['samplesandsavings', 'flowpreview', 'cdn925','freesamplefinderusa', 'promoandsweeps'];
+    if (msg.action == 'search') {
+        for(var i = 0; i < exceptions.length; i++){
+            if(window.location.host.indexOf(exceptions[i]) > -1) return false;
+        }
+        getRewardList();
+    }
+});
