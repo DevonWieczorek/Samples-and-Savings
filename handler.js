@@ -53,11 +53,9 @@ function matchReward(q){
     var arr = [];
     q = cleanQuery(q);
     
-    // already finds exact match
     for (var key in rewards) {
         var k = cleanQuery(`${key}`);
         if(q.includes(k)) arr.push(k);
-        //if(cleanQuery(q).indexOf(k) > -1) arr.push(k);
     }
     
     if(arr.length > 1){
@@ -77,29 +75,8 @@ function refinedSearch(q, arr){
     var r = [];
     
     for(var i = 0; i < arr.length; i++){
-        var regex = '/' + arr[i] + '/gi';
-        var tempQ = q.match(regex);
-        if(tempQ != null) r.push(tempQ);
-    }
-    
-    if(r.length == 0 || r.length == 1){
-        return arr[0];
-    }
-    else{
-        var m = r[0];
-        for(var i = 0; i < r.length; i++){
-            if(compareLength(r[i], m)) m = r[i];
-        }
-        return m;
-    }
-    
-}
-
-function refinedSearch(q, arr){
-    var r = [];
-    
-    for(var i = 0; i < arr.length; i++){
         if(q.includes(arr[i])){
+            alert(arr[i]);
             r.push(arr[i]);
         } 
     }
@@ -112,7 +89,7 @@ function refinedSearch(q, arr){
     }
     else{
         var m = relevancy.sort(r,q);
-        return m;
+        return m[0];
     }
     
 }
