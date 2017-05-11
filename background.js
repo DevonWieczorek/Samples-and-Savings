@@ -1,10 +1,10 @@
 
 var linkout = '';
 
-function notify(notifyMessage, img) {
+function notify(notifyMessage, img, messageTitle) {
     var options = {
         type: "basic",
-        title: "Why spend money?",
+        title: messageTitle,
         message: notifyMessage,
         iconUrl: img,
         buttons: [
@@ -71,7 +71,7 @@ chrome.runtime.onMessage.addListener(function(response, sender, sendResponse){
                     }
                     else{
                         // If no, show the reward
-                        notify(response.message, response.img);
+                        notify(response.message, response.img, response.messageTitle);
                         
                         // Update the timestamp for last shown
                         var timestamp = getTimeStamp();
@@ -79,7 +79,7 @@ chrome.runtime.onMessage.addListener(function(response, sender, sendResponse){
                     }
                 } 
                 else{
-                    notify(response.message, response.img);
+                    notify(response.message, response.img, response.messageTitle);
                     
                     // Save the timestamp of when this reward was shown
                     var timestamp = getTimeStamp();
@@ -90,7 +90,7 @@ chrome.runtime.onMessage.addListener(function(response, sender, sendResponse){
             else{
                 // If local storage is not supported show the reward anyway
                 console.log('Local storage is not supported in this browser.');
-                notify(response.message, response.img);
+                notify(response.message, response.img, response.messageTitle);
             }
 
         } 

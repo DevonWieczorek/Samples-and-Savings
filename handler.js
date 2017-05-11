@@ -92,6 +92,7 @@ function cleanRewardText(r){
 var img = '';
 var url = '';
 var message = '';
+var messageTitle = '';
 var rewardText = '';
 var rewardValue = '';
 var response = [];
@@ -123,9 +124,17 @@ function getReward(reward) {
         
             message = 'Click here for FREE ' + cleanRewardText(rewardText) + '!\nAct quickly!';
         
+            if(rewardText.toLowerCase().indexOf('coupons') > -1){
+                messageTitle = 'Want to save money?';
+            }
+            else{
+                messageTitle = 'Why spend money?'
+            }
+        
             url = 'http://signup.samplesandsavings.com/default.aspx?Flow=C9A3F9FE-57A9-D490-BE51-26C2DFC9DC07E007EFC7&reward=' + reward;
 
             chrome.extension.sendMessage({
+                messageTitle: messageTitle,
                 message: message, 
                 img: img, 
                 url: url, 
@@ -133,7 +142,7 @@ function getReward(reward) {
                 rewardValue: reward
             }, function(){});
 
-            response = [img, message, url, rewardText, rewardValue];
+            response = [img, messageTitle, message, url, rewardText, rewardValue];
             return response;
     });
 }
