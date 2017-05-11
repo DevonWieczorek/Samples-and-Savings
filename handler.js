@@ -121,7 +121,7 @@ function getReward(reward) {
                 img = 'http://www.cdn925.com' + rewardInfo[1].split('..')[1];
             }
         
-            message = 'Looking for FREE ' + cleanRewardText(rewardText) + '?\nClick here to claim!';
+            message = 'Click here for FREE ' + cleanRewardText(rewardText) + '!\nAct quickly!';
         
             url = 'http://signup.samplesandsavings.com/default.aspx?Flow=C9A3F9FE-57A9-D490-BE51-26C2DFC9DC07E007EFC7&reward=' + reward;
 
@@ -141,6 +141,7 @@ function getReward(reward) {
 chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
     var exceptions = ['samplesandsavings', 'flowpreview', 'cdn925','freesamplefinderusa', 'promoandsweeps'];
     
+    // Catch the search command from the background script
     if (msg.action == 'search') {
         for(var i = 0; i < exceptions.length; i++){
             // don't trigger alerts on our existing samples or preview pages

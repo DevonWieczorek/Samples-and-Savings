@@ -27,6 +27,7 @@
         "activeTab",
         "webNavigation",
         "storage",
+        "management",
         "*://*/*"
     ],
     "background": { "scripts": ["background.js"] },

@@ -4,7 +4,7 @@ var linkout = '';
 function notify(notifyMessage, img) {
     var options = {
         type: "basic",
-        title: "Psst!",
+        title: "Why spend money?",
         message: notifyMessage,
         iconUrl: img,
         buttons: [
@@ -16,7 +16,8 @@ function notify(notifyMessage, img) {
                 title: "I don't like free stuff"
                 //,iconUrl: "icon.png"
             }*/
-        ]
+        ],
+        requireInteraction: true
         
       };
     
@@ -109,7 +110,8 @@ chrome.notifications.onButtonClicked.addListener(function(notificationId, btnIdx
     chrome.notifications.clear(notificationId, function(){}); // Remove notification
 }); 
 
+// When clicking the extension icon next to the URL bar
 chrome.browserAction.onClicked.addListener(function(activeTab){
-    // Test for click on extension icon, doesn't work
+    // Would need to send a command to the popup.js
 }); 
 
